@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"syscall/js"
 
-	"github.com/chriscow/js/canvas"
-	"github.com/chriscow/vector2d"
+	"github.com/chriscow/go-wasm-example/js/canvas"
+	"github.com/chriscow/go-wasm-example/vector2d"
 )
 
 func renderPolygon(ctx *canvas.Context2D, s *vector2d.Polygon) {
@@ -51,6 +52,25 @@ func main() {
 	// 	New shapes are drawn behind the existing canvas content.
 	ctx.SetGlobalCompositeOperation("destination-over")
 
-	ctx.BeginPath()
+	poly := vector2d.NewPolygon(
+		0, 2,
+		-1.5, -2,
+		-1, -1,
+		1, -1,
+		1.5, -2,
+	)
 
+	proj := poly.Clone().Translate(1280/2, 720/2).Scale(10, 10)
+	renderPolygon(ctx, proj)
+
+	ctx.Save()
+	ctx.SetTextAlign("center")
+	ctx.SetFont("bold 20px Courier New")
+	ctx.SetStrokeStyle("rgba(0, 0, 0, 1)")
+	ctx.FillText(fmt.Sprintf("Score:"), 640, 40, 1280)
+	ctx.Restore()
+
+	// Never return
+	done := make(chan struct{}, 0)
+	<-done
 }
